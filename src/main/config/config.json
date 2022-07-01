@@ -1,0 +1,19 @@
+{
+  "refreshRate": 1,
+  "swapSpreadModel": {
+    "modelType": "Vasicek",
+    "initialValue": 0.008,
+    "annualisedVol": 0.005,
+    "longTermMean": 0.01,
+    "meanReversionSpeed": 0.5,
+    "seed": 0
+  },
+  "bondModel": {
+    "modelType": "Vasicek",
+    "initialValue": 0.012,
+    "annualisedVol": 0.01,
+    "longTermMean": 0.02,
+    "meanReversionSpeed": 1,
+    "seed": 1
+  }
+}
