@@ -22,15 +22,14 @@ public class VasicekModel extends StochasticModel {
 
     @Override
     public double evolvePriceUntil(long timeStamp) {
-        double previousInternalTimestamp = this.currentInternalTimestamp;
-
         double brownianIncrement = evolveRandomGenerator(timeStamp);
         double diffusionTerm = brownianIncrement*annualisedVol;
 
         long timeDelta = getTimeDelta(timeStamp);
         double driftTerm = meanReversionSpeed*(longTermMean - currentPrice)*getYearFraction(timeDelta);
 
-        double newPrice = driftTerm + diffusionTerm;
+        double newPriceDelta = driftTerm + diffusionTerm;
+        double newPrice = currentPrice + newPriceDelta;
 
         currentInternalTimestamp = timeStamp;
         currentPrice = newPrice;
@@ -67,10 +66,10 @@ public class VasicekModel extends StochasticModel {
     public String toString() {
         return "VasicekModel[" +
                     "currentInternalTimestamp: " + this.currentInternalTimestamp +
-                    " currentPrice: " + this.currentPrice +
-                    " annualisedVol: " + this.annualisedVol +
-                    " longTermMean: " + this.longTermMean +
-                    " meanReversionSpeed: " + this.meanReversionSpeed
+                    ", currentPrice: " + this.currentPrice +
+                    ", annualisedVol: " + this.annualisedVol +
+                    ", longTermMean: " + this.longTermMean +
+                    ", meanReversionSpeed: " + this.meanReversionSpeed
                     + "]";
     }
 }

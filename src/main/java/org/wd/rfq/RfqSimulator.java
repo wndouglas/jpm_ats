@@ -3,56 +3,89 @@ package org.wd.rfq;
 import org.json.JSONObject;
 import org.wd.rfq.model.Model;
 import org.wd.rfq.model.ModelFactory;
+import org.wd.rfq.util.RandomGenerator;
+import org.wd.rfq.util.UniformGenerator;
 
 import java.util.logging.Logger;
 
 public class RfqSimulator {
     private final Logger LOGGER = Logger.getGlobal();
 
-    private final double refreshRate;
+    private final double swapSpreadRefreshRate;
+    private final double bondYieldRefreshRate;
+    private final int maxRfqRefreshRate;
+    private final RandomGenerator rfqRandomRequestSimulator;
     private final Model swapSpreadModel;
-    private final Model bondModel;
+    private final Model bondYieldModel;
 
     private RfqSimulator(RfqSimulatorBuilder builder) {
-        this.refreshRate = builder.refreshRate;
-        this.swapSpreadModel = builder.swapSpreadModel;
-        this.bondModel = builder.bondModel;
+        swapSpreadRefreshRate = builder.swapSpreadRefreshRate;
+        bondYieldRefreshRate = builder.bondYieldRefreshRate;
+        maxRfqRefreshRate = builder.maxRfqRequestRate;
+        rfqRandomRequestSimulator = builder.rfqRandomRequestSimulator;
+        swapSpreadModel = builder.swapSpreadModel;
+        bondYieldModel = builder.bondYieldModel;
 
         LOGGER.info("Constructing RFQ Simulator with parameters:");
-        LOGGER.info("* refreshRate: " + refreshRate);
+        LOGGER.info("* swapSpreadRefreshRate: " + swapSpreadRefreshRate);
+        LOGGER.info("* bondYieldRefreshRate: " + bondYieldRefreshRate);
+        LOGGER.info("* maxRfqRefreshRate: " + maxRfqRefreshRate);
         LOGGER.info("* swapSpreadModel: " + swapSpreadModel);
-        LOGGER.info("* bondModel: " + bondModel);
+        LOGGER.info("* bondYieldModel: " + bondYieldModel);
     }
 
     public void run() {
-        PricingThread p1 = new PricingThread("pricingThread", refreshRate);
-        p1.start();
+        DataManager dataManager = new DataManager();
 
-        PricingThread p2 = new PricingThread("pricingThreadAlt", refreshRate);
-        p2.start();
+        PricingThread swapSpreadThread = new PricingThread("swapSpreadThread", swapSpreadRefreshRate, swapSpreadModel, dataManager, DataManager.SWAP_SPREAD_KEY);
+        PricingThread bondThread = new PricingThread("bondYieldThread", bondYieldRefreshRate, bondYieldModel, dataManager, DataManager.BOND_YIELD_KEY);
+        RfqThread rfqThread = new RfqThread("rfqThread", dataManager, rfqRandomRequestSimulator);
+        swapSpreadThread.start();
+        bondThread.start();
+        rfqThread.start();
     }
 
-    public double getRefreshRate() {
-        return refreshRate;
+    public double getSwapSpreadRefreshRate() {
+        return swapSpreadRefreshRate;
+    }
+
+    public double getBondYieldRefreshRate() {
+        return bondYieldRefreshRate;
     }
 
     @Override
     public String toString() {
         return "RfqSimulator[" +
-                "refreshRate: " + this.refreshRate +
+                "swapSpreadRefreshRate: " + this.swapSpreadRefreshRate +
+                "bondYieldRefreshRate: " + this.bondYieldRefreshRate +
+                "maxRfqRefreshRate: " + this.maxRfqRefreshRate +
                 "swapSpreadModel: " + this.swapSpreadModel +
-                "bondModel: " + this.bondModel +
+                "bondYieldModel: " + this.bondYieldModel +
                 "]";
     }
 
     public static class RfqSimulatorBuilder
     {
-        private double refreshRate;
+        private double swapSpreadRefreshRate;
+        private double bondYieldRefreshRate;
+        private int maxRfqRequestRate;
+        private RandomGenerator rfqRandomRequestSimulator;
         private Model swapSpreadModel;
-        private Model bondModel;
+        private Model bondYieldModel;
 
-        public RfqSimulatorBuilder refreshRate(double refreshRate) {
-            this.refreshRate = refreshRate;
+        public RfqSimulatorBuilder swapSpreadRefreshRate(double swapSpreadRefreshRate) {
+            this.swapSpreadRefreshRate = swapSpreadRefreshRate;
+            return this;
+        }
+
+        public RfqSimulatorBuilder bondYieldRefreshRate(double bondYieldRefreshRate) {
+            this.bondYieldRefreshRate = bondYieldRefreshRate;
+            return this;
+        }
+
+        public RfqSimulatorBuilder rfqRandomRequestSimulator(long rfqRandomRequestSeed, int maxRfqRefreshRate) {
+            this.maxRfqRequestRate = maxRfqRefreshRate;
+            this.rfqRandomRequestSimulator = new UniformGenerator(rfqRandomRequestSeed, maxRfqRefreshRate);
             return this;
         }
 
@@ -61,8 +94,8 @@ public class RfqSimulator {
             return this;
         }
 
-        public RfqSimulatorBuilder bondModel(JSONObject bondModelConfig) {
-            this.bondModel = ModelFactory.getModel(bondModelConfig);
+        public RfqSimulatorBuilder bondYieldModel(JSONObject bondYieldModelConfig) {
+            this.bondYieldModel = ModelFactory.getModel(bondYieldModelConfig);
             return this;
         }
 
@@ -74,13 +107,18 @@ public class RfqSimulator {
 
         public static RfqSimulator buildFromJsonString(String jsonString) {
             JSONObject configJsonObject = new JSONObject(jsonString);
-            double refreshRate = configJsonObject.getDouble("refreshRate");
+            double swapSpreadRefreshRate = configJsonObject.getDouble("swapSpreadRefreshRate");
+            double bondYieldRefreshRate = configJsonObject.getDouble("bondYieldRefreshRate");
+            int maxRfqRefreshRate = configJsonObject.getInt("maxRfqRefreshRate");
+            long rfqRandomRequestSeed = configJsonObject.getLong("rfqRandomRequestSeed");
             JSONObject swapSpreadModelConfig = configJsonObject.getJSONObject("swapSpreadModel");
-            JSONObject bondModelConfig = configJsonObject.getJSONObject("bondModel");
+            JSONObject bondYieldModelConfig = configJsonObject.getJSONObject("bondYieldModel");
             return new RfqSimulatorBuilder()
-                    .refreshRate(refreshRate)
+                    .swapSpreadRefreshRate(swapSpreadRefreshRate)
+                    .bondYieldRefreshRate(bondYieldRefreshRate)
                     .swapSpreadModel(swapSpreadModelConfig)
-                    .bondModel(bondModelConfig)
+                    .bondYieldModel(bondYieldModelConfig)
+                    .rfqRandomRequestSimulator(rfqRandomRequestSeed, maxRfqRefreshRate)
                     .build();
         }
 

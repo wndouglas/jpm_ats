@@ -1,5 +1,7 @@
 package org.wd.rfq;
 
+import org.wd.rfq.model.Model;
+
 import java.util.logging.Logger;
 
 public class PricingThread implements Runnable {
@@ -7,14 +9,20 @@ public class PricingThread implements Runnable {
     private String threadName;
     private long refreshRateMillis;
     private long iterationNumber;
+    private Model model;
+    private DataManager dataManager;
+    private String midKey;
 
     private static final Logger LOGGER = Logger.getGlobal();
 
-    public PricingThread(String threadName, double refreshRate) {
-        this.threadName = threadName;
-        this.refreshRateMillis = (long)refreshRate*1000;
+    public PricingThread(String threadName, double refreshRate, Model model, DataManager dataManager, String midKey) {
         LOGGER.info("Creating thread: " + threadName);
+        this.threadName = threadName;
+        refreshRateMillis = (long)(refreshRate*1000);
         iterationNumber = 0;
+        this.model = model;
+        this.dataManager = dataManager;
+        this.midKey = midKey;
     }
 
     @Override
@@ -23,7 +31,13 @@ public class PricingThread implements Runnable {
 
         while(true) {
             try {
-                LOGGER.info("Thread: " + threadName + ", iteration: " + iterationNumber);
+                long currentTimeStamp = System.currentTimeMillis();
+                double currentMid = model.evolvePriceUntil(currentTimeStamp);
+                dataManager.setCurrentTimestamp(currentTimeStamp);
+                dataManager.setMid(midKey, currentMid);
+
+                LOGGER.info("Thread: " + threadName + ", iteration: " + iterationNumber + ", current mid for " + midKey + ": " + currentMid + ", as of timestamp: " + currentTimeStamp);
+
                 Thread.sleep(refreshRateMillis);
                 iterationNumber += 1;
 
