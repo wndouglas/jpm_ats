@@ -1,5 +1,7 @@
 package org.wd.rfq;
 
+import org.wd.rfq.event.RfqRequestEvent;
+import org.wd.rfq.event.RfqResponseEvent;
 import org.wd.rfq.logic.SpreadCalculator;
 
 import java.util.concurrent.BlockingQueue;
@@ -30,6 +32,7 @@ public class RfqResponseThread implements Runnable {
                 RfqRequestEvent rfqRequestEvent = eventQueue.take();
 
                 long rfqNotional = rfqRequestEvent.getNotional();
+                String rfqId = rfqRequestEvent.getrequestId();
 
                 Double currentSwapMid = dataManager.getSwapRateMid();
                 Long currentSwapTimestamp = dataManager.getCurrentTimestamp();
@@ -39,7 +42,7 @@ public class RfqResponseThread implements Runnable {
                     LOGGER.info("Thread: " + threadName + ", no price availabe at timestamp: " + currentTimestamp + " - no RFQ response generated");
                 }
                 else {
-                    RfqResponseEvent rfqResponseEvent = generateRfqResponse(rfqNotional, currentSwapMid, currentTimestamp);
+                    RfqResponseEvent rfqResponseEvent = generateRfqResponse(rfqNotional, rfqId, currentSwapMid, currentTimestamp);
                     LOGGER.info("Thread: " + threadName + ", generated RFQ response: " + rfqResponseEvent);
                 }
             } catch (InterruptedException e) {
@@ -48,11 +51,11 @@ public class RfqResponseThread implements Runnable {
         }
     }
 
-    private RfqResponseEvent generateRfqResponse(long rfqNotional, double currentSwapMid, long currentTimestamp) {
+    private RfqResponseEvent generateRfqResponse(long rfqNotional, String requestId, double currentSwapMid, long currentTimestamp) {
         double spread = spreadCalculator.getSpread(rfqNotional);
         double paySwapRate = currentSwapMid + spread;
         double rcvSwapRate = currentSwapMid - spread;
-        return new RfqResponseEvent(paySwapRate, rcvSwapRate, currentTimestamp, rfqNotional);
+        return new RfqResponseEvent(paySwapRate, rcvSwapRate, currentTimestamp, rfqNotional, requestId);
     }
 
     public void start() {

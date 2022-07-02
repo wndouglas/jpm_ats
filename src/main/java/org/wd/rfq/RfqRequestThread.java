@@ -1,5 +1,6 @@
 package org.wd.rfq;
 
+import org.wd.rfq.event.RfqRequestEvent;
 import org.wd.rfq.simulation.RandomGenerator;
 
 import java.util.concurrent.BlockingQueue;
@@ -40,7 +41,7 @@ public class RfqRequestThread implements Runnable {
 
                 RfqRequestEvent rfqEvent = new RfqRequestEvent(rfqNotional, requestTimestamp);
 
-                LOGGER.info("Thread: " + threadName + ", iteration: " + iterationNumber + ", client submitted RFQ: " + rfqEvent);
+                LOGGER.info("Thread: " + threadName + ", client submitted RFQ: " + rfqEvent);
 
                 eventQueue.put(rfqEvent);
 

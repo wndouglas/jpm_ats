@@ -36,7 +36,7 @@ public class PricingThread implements Runnable {
                 dataManager.setCurrentTimestamp(currentTimeStamp);
                 dataManager.setMid(midKey, currentMid);
 
-                LOGGER.info("Thread: " + threadName + ", iteration: " + iterationNumber + ", current mid for " + midKey + ": " + currentMid + ", as of timestamp: " + currentTimeStamp);
+                LOGGER.info("Thread: " + threadName + ", current mid for " + midKey + ": " + (long)Math.floor(currentMid*1e6)/1e4 + "%, as of timestamp: " + currentTimeStamp);
 
                 Thread.sleep(refreshRateMillis);
                 iterationNumber += 1;

@@ -1,6 +1,7 @@
 package org.wd.rfq;
 
 import org.json.JSONObject;
+import org.wd.rfq.event.RfqRequestEvent;
 import org.wd.rfq.logic.SpreadCalculator;
 import org.wd.rfq.model.Model;
 import org.wd.rfq.model.ModelFactory;
