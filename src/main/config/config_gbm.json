@@ -14,11 +14,10 @@
     "seed": 2
   },
   "bondYieldModel": {
-    "modelType": "Vasicek",
+    "modelType": "GBM",
     "initialValue": 0.012,
-    "annualisedVol": 0.1,
-    "longTermMean": 0.02,
-    "meanReversionSpeed": 0.1,
+    "annualisedVol": 1,
+    "annualisedMeanDrift": 0.02,
     "seed": 3
   }
 }

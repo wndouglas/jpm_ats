@@ -2,18 +2,17 @@ package org.wd.rfq.model;
 
 import org.wd.rfq.simulation.StandardNormalGenerator;
 
-public class VasicekModel extends StochasticModel {
+public class GbmModel extends StochasticModel {
     private final double annualisedVol;
-    private final double longTermMean;
-    private final double meanReversionSpeed;
+    private final double annualisedMeanDrift;
 
-    public VasicekModel(long initialTimeStamp, double initialPrice, double annualisedVol, double longTermMean,
-                        double meanReversionSpeed, StandardNormalGenerator stdNormalGenerator) {
+    public GbmModel(long initialTimeStamp, double initialPrice, double annualisedVol, double annualisedMeanDrift,
+                    StandardNormalGenerator stdNormalGenerator) {
         super(stdNormalGenerator, initialTimeStamp, initialPrice);
         this.annualisedVol = annualisedVol;
-        this.longTermMean = longTermMean;
-        this.meanReversionSpeed = meanReversionSpeed;
+        this.annualisedMeanDrift = annualisedMeanDrift;
     }
+
 
     @Override
     public double evolvePriceUntil(long timeStamp) {
@@ -21,9 +20,9 @@ public class VasicekModel extends StochasticModel {
         double diffusionTerm = brownianIncrement*annualisedVol;
 
         long timeDelta = getTimeDelta(timeStamp);
-        double driftTerm = meanReversionSpeed*(longTermMean - currentPrice)*getYearFraction(timeDelta);
+        double driftTerm = annualisedMeanDrift*getYearFraction(timeDelta);
 
-        double newPriceDelta = driftTerm + diffusionTerm;
+        double newPriceDelta = currentPrice*(driftTerm + diffusionTerm);
         double newPrice = currentPrice + newPriceDelta;
 
         currentInternalTimestamp = timeStamp;
@@ -43,12 +42,11 @@ public class VasicekModel extends StochasticModel {
 
     @Override
     public String toString() {
-        return "VasicekModel[" +
-                    "currentInternalTimestamp: " + this.currentInternalTimestamp +
-                    ", currentPrice: " + this.currentPrice +
-                    ", annualisedVol: " + this.annualisedVol +
-                    ", longTermMean: " + this.longTermMean +
-                    ", meanReversionSpeed: " + this.meanReversionSpeed
-                    + "]";
+        return "GbmModel[" +
+                "currentInternalTimestamp: " + this.currentInternalTimestamp +
+                ", currentPrice: " + this.currentPrice +
+                ", annualisedVol: " + this.annualisedVol +
+                ", annualisedMeanDrift: " + this.annualisedMeanDrift +
+                "]";
     }
 }

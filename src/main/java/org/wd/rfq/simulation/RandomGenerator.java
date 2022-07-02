@@ -1,4 +1,4 @@
-package org.wd.rfq.util;
+package org.wd.rfq.simulation;
 
 public interface RandomGenerator {
     double getNextValue();

@@ -1,4 +1,4 @@
-package org.wd.rfq.util;
+package org.wd.rfq.simulation;
 
 import java.util.Random;
 
