@@ -1,5 +1,6 @@
-package org.wd.rfq;
+package org.wd.rfq.concurrency;
 
+import org.wd.rfq.DataManager;
 import org.wd.rfq.event.RfqRequestEvent;
 import org.wd.rfq.event.RfqResponseEvent;
 import org.wd.rfq.logic.SpreadCalculator;
@@ -9,7 +10,7 @@ import java.util.logging.Logger;
 
 public class RfqResponseThread implements Runnable {
     private Thread t;
-    private String threadName;
+    private final String threadName;
     private final DataManager dataManager;
     private final BlockingQueue<RfqRequestEvent> eventQueue;
     private final SpreadCalculator spreadCalculator;
@@ -64,5 +65,14 @@ public class RfqResponseThread implements Runnable {
             t = new Thread(this, threadName);
             t.start();
         }
+    }
+
+    @Override
+    public String toString() {
+        return "RfqResponseThread[" +
+                "threadName: " + this.threadName +
+                ", dataManager: " + this.dataManager +
+                ", eventQueue: " + this.eventQueue +
+                "]";
     }
 }

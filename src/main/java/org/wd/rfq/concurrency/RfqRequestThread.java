@@ -1,4 +1,4 @@
-package org.wd.rfq;
+package org.wd.rfq.concurrency;
 
 import org.wd.rfq.event.RfqRequestEvent;
 import org.wd.rfq.simulation.RandomGenerator;
@@ -6,14 +6,15 @@ import org.wd.rfq.simulation.RandomGenerator;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Logger;
 
+import static org.wd.rfq.RfqSimulator.NOTIONAL_UNIT;
+
 public class RfqRequestThread implements Runnable {
     private Thread t;
-    private String threadName;
+    private final String threadName;
     private long iterationNumber;
     private final RandomGenerator rfqRequestRandomTimeSimulator;
     private final RandomGenerator rfqRequestRandomNotionalSimulator;
     private final BlockingQueue<RfqRequestEvent> eventQueue;
-
     private static final Logger LOGGER = Logger.getGlobal();
 
     public RfqRequestThread(
@@ -36,7 +37,7 @@ public class RfqRequestThread implements Runnable {
                 long refreshRateMillis = (long)(rfqRequestRandomTimeSimulator.getNextValue()*1000);
                 Thread.sleep(refreshRateMillis);
 
-                long rfqNotional = (long)(rfqRequestRandomNotionalSimulator.getNextValue()*1000000);
+                long rfqNotional = (long)(rfqRequestRandomNotionalSimulator.getNextValue()*NOTIONAL_UNIT);
                 long requestTimestamp = System.currentTimeMillis();
 
                 RfqRequestEvent rfqEvent = new RfqRequestEvent(rfqNotional, requestTimestamp);
@@ -63,5 +64,15 @@ public class RfqRequestThread implements Runnable {
             t = new Thread(this, threadName);
             t.start();
         }
+    }
+
+    @Override
+    public String toString() {
+        return "RfqRequestThread[" +
+                "threadName: " + this.threadName +
+                ", rfqRequestRandomTimeSimulator: " + this.rfqRequestRandomTimeSimulator +
+                ", rfqRequestRandomNotionalSimulator: " + this.rfqRequestRandomNotionalSimulator +
+                ", eventQueue: " + this.eventQueue +
+                "]";
     }
 }

@@ -1,18 +1,21 @@
-package org.wd.rfq;
+package org.wd.rfq.concurrency;
 
+import org.wd.rfq.DataManager;
 import org.wd.rfq.model.Model;
-
 import java.util.logging.Logger;
 
+/**
+ * The PricingThread runs a model at a constant refresh rate in its own thread,
+ * updating the DataManager instance
+ */
 public class PricingThread implements Runnable {
     private Thread t;
-    private String threadName;
-    private long refreshRateMillis;
+    private final String threadName;
+    private final long refreshRateMillis;
     private long iterationNumber;
-    private Model model;
-    private DataManager dataManager;
-    private String midKey;
-
+    private final Model model;
+    private final DataManager dataManager;
+    private final String midKey;
     private static final Logger LOGGER = Logger.getGlobal();
 
     public PricingThread(String threadName, double refreshRate, Model model, DataManager dataManager, String midKey) {
@@ -57,5 +60,16 @@ public class PricingThread implements Runnable {
             t = new Thread(this, threadName);
             t.start();
         }
+    }
+
+    @Override
+    public String toString() {
+        return "PricingThread[" +
+                "threadName: " + this.threadName +
+                ", refreshRateMillis: " + this.refreshRateMillis +
+                ", model: " + this.model +
+                ", dataManager: " + this.dataManager +
+                ", midKey: " + this.midKey +
+                "]";
     }
 }

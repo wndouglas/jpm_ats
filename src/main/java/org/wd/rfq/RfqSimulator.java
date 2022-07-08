@@ -1,6 +1,9 @@
 package org.wd.rfq;
 
 import org.json.JSONObject;
+import org.wd.rfq.concurrency.PricingThread;
+import org.wd.rfq.concurrency.RfqRequestThread;
+import org.wd.rfq.concurrency.RfqResponseThread;
 import org.wd.rfq.event.RfqRequestEvent;
 import org.wd.rfq.logic.SpreadCalculator;
 import org.wd.rfq.model.Model;
@@ -13,12 +16,12 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.logging.Logger;
 
 public class RfqSimulator {
-    private final Logger LOGGER = Logger.getGlobal();
-
+    private static final Logger LOGGER = Logger.getGlobal();
+    public static final long NOTIONAL_UNIT = 1_000_000;
     private final double swapSpreadRefreshRate;
     private final double bondYieldRefreshRate;
     private final int maxRfqRefreshRate;
-    private final int maxRfqNotional;
+    private final long maxRfqNotional;
     private final SpreadCalculator spreadCalculator;
     private final RandomGenerator rfqRequestRandomTimeSimulator;
     private final RandomGenerator rfqRequestRandomNotionalSimulator;
@@ -46,30 +49,22 @@ public class RfqSimulator {
     }
 
     public void run() {
-        DataManager dataManager = new DataManager();
+        DataManager dataManager = DataManager.getInstance();
         BlockingQueue<RfqRequestEvent> eventQueue = new LinkedBlockingDeque<>();
 
         PricingThread swapSpreadThread = new PricingThread(
                 "swapSpreadThread", swapSpreadRefreshRate, swapSpreadModel, dataManager, DataManager.SWAP_SPREAD_KEY);
         swapSpreadThread.start();
 
-        PricingThread bondThread = new PricingThread(
+        PricingThread bondYieldThread = new PricingThread(
                 "bondYieldThread", bondYieldRefreshRate, bondYieldModel, dataManager, DataManager.BOND_YIELD_KEY);
-        bondThread.start();
+        bondYieldThread.start();
 
         RfqRequestThread rfqRequestThread = new RfqRequestThread("rfqRequestThread", rfqRequestRandomTimeSimulator, rfqRequestRandomNotionalSimulator, eventQueue);
         rfqRequestThread.start();
 
         RfqResponseThread rfqResponseThread = new RfqResponseThread("rfqResponseThread", dataManager, eventQueue, spreadCalculator);
         rfqResponseThread.start();
-    }
-
-    public double getSwapSpreadRefreshRate() {
-        return swapSpreadRefreshRate;
-    }
-
-    public double getBondYieldRefreshRate() {
-        return bondYieldRefreshRate;
     }
 
     @Override
@@ -89,7 +84,7 @@ public class RfqSimulator {
         private double swapSpreadRefreshRate;
         private double bondYieldRefreshRate;
         private int maxRfqRequestRate;
-        private int maxRfqNotional;
+        private long maxRfqNotional;
         private SpreadCalculator spreadCalculator;
         private RandomGenerator rfqRequestRandomTimeSimulator;
         private RandomGenerator rfqRequestRandomNotionalSimulator;
@@ -113,7 +108,7 @@ public class RfqSimulator {
         }
 
         public RfqSimulatorBuilder rfqRequestRandomNotionalSimulator(long rfqRequestRandomNotionalSeed, int maxRfqNotional) {
-            this.maxRfqNotional = maxRfqNotional*1000000;
+            this.maxRfqNotional = maxRfqNotional*NOTIONAL_UNIT;
             this.spreadCalculator = new SpreadCalculator(this.maxRfqNotional);
             this.rfqRequestRandomNotionalSimulator = new UniformGenerator(rfqRequestRandomNotionalSeed, maxRfqNotional);
             return this;
@@ -131,7 +126,7 @@ public class RfqSimulator {
 
         public RfqSimulator build() {
             RfqSimulator rfqSimulator = new RfqSimulator(this);
-            validateRfqSimulator(rfqSimulator);
+            validateRfqSimulator();
             return rfqSimulator;
         }
 
@@ -156,7 +151,7 @@ public class RfqSimulator {
                     .build();
         }
 
-        private void validateRfqSimulator(RfqSimulator simulator) {
+        private void validateRfqSimulator() {
             // Can add validation to ensure simulator has been constructed in a valid state.
         }
     }

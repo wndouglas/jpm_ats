@@ -17,4 +17,11 @@ public class SpreadCalculator {
         double percentageSpread = 1.0 - Math.pow(maxNotional - notional, 2)/Math.pow(maxNotional, 2);
         return (percentageSpread*MAX_SPREAD_BPS + (1-percentageSpread)*MIN_SPREAD_BPS)/1e4;
     }
+
+    @Override
+    public String toString() {
+        return "SpreadCalculator[" +
+                "maxNotional: " + this.maxNotional +
+                "]";
+    }
 }

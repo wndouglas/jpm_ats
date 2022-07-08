@@ -24,6 +24,10 @@ public class RfqRequestEvent {
     @Override
     public String toString() {
         long notionalMillions = this.notional/1000000;
-        return "RfqRequestEvent[requestId: " + requestId + ", timestamp: " + this.timestamp + ", notional (m): " + notionalMillions + "]";
+        return "RfqRequestEvent[" +
+                "requestId: " + requestId +
+                ", timestamp: " + this.timestamp +
+                ", notional (m): " + notionalMillions +
+                "]";
     }
 }

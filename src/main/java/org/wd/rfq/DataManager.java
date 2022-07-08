@@ -11,11 +11,17 @@ public class DataManager {
     public static final String SWAP_SPREAD_KEY = "swapSpread";
     public static final String BOND_YIELD_KEY = "bondYield";
 
-    public DataManager() {
+    private static final DataManager DATA_MANAGER = new DataManager();
+
+    private DataManager() {
         currentMidMap = new HashMap<>();
         currentMidMap.put(SWAP_SPREAD_KEY, null);
         currentMidMap.put(BOND_YIELD_KEY, null);
         currentTimestamp = System.currentTimeMillis();
+    }
+
+    public static DataManager getInstance() {
+        return DATA_MANAGER;
     }
 
     public Long getCurrentTimestamp() {

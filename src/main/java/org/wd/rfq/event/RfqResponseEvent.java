@@ -1,5 +1,7 @@
 package org.wd.rfq.event;
 
+import static org.wd.rfq.RfqSimulator.NOTIONAL_UNIT;
+
 public class RfqResponseEvent {
     private final double paySwapRate;
     private final double receiveSwapRate;
@@ -18,13 +20,13 @@ public class RfqResponseEvent {
 
     @Override
     public String toString() {
-        long notionalMillions = this.notional/1000000;
+        long notionalMillions = this.notional/NOTIONAL_UNIT;
         return "RfqResponseEvent[" +
                 "requestId: " + this.requestId +
                 ", timestamp: " + this.timestamp +
                 ", notional (m): " + notionalMillions +
                 ", pay (client perspective): " + (long)Math.floor(this.paySwapRate*1e4)/100.0 + "%" +
-                ", receive bps (client perspective): " + (long)Math.floor(this.receiveSwapRate*1e4)/100.0 + "%" +
+                ", receive (client perspective): " + (long)Math.floor(this.receiveSwapRate*1e4)/100.0 + "%" +
                 "]";
     }
 }
