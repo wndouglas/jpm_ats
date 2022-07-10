@@ -25,8 +25,8 @@ public class RfqResponseEvent {
                 "requestId: " + this.requestId +
                 ", timestamp: " + this.timestamp +
                 ", notional (m): " + notionalMillions +
-                ", pay (client perspective): " + (long)Math.floor(this.paySwapRate*1e4)/100.0 + "%" +
-                ", receive (client perspective): " + (long)Math.floor(this.receiveSwapRate*1e4)/100.0 + "%" +
+                ", pay (client perspective): " + (long)Math.floor(this.paySwapRate*1e6)/1e4 + "%" +
+                ", receive (client perspective): " + (long)Math.floor(this.receiveSwapRate*1e6)/1e4 + "%" +
                 "]";
     }
 }

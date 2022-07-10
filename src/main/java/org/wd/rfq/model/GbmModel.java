@@ -2,7 +2,7 @@ package org.wd.rfq.model;
 
 import org.wd.rfq.simulation.StandardNormalGenerator;
 
-public class GbmModel extends StochasticModel {
+class GbmModel extends StochasticModel {
     private final double annualisedVol;
     private final double annualisedMeanDrift;
 
@@ -12,7 +12,6 @@ public class GbmModel extends StochasticModel {
         this.annualisedVol = annualisedVol;
         this.annualisedMeanDrift = annualisedMeanDrift;
     }
-
 
     @Override
     public double evolvePriceUntil(long timeStamp) {

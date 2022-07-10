@@ -2,6 +2,7 @@ package org.wd.rfq.concurrency;
 
 import org.wd.rfq.DataManager;
 import org.wd.rfq.model.Model;
+
 import java.util.logging.Logger;
 
 /**

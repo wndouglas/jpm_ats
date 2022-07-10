@@ -15,7 +15,7 @@ import java.util.logging.ConsoleHandler;
 /**
  * The following class provides the entry point to the RFQ simulator.
  */
-public class RfqSimulationLauncher {
+public final class RfqSimulationLauncher {
     public static void main(String[] args) throws IOException {
         SimulationCmdOptions simulationCmdOptions = SimulationCmdOptions.create(args);
 

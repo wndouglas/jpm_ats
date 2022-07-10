@@ -2,7 +2,7 @@ package org.wd.rfq.model;
 
 import org.wd.rfq.simulation.StandardNormalGenerator;
 
-public class VasicekModel extends StochasticModel {
+class VasicekModel extends StochasticModel {
     private final double annualisedVol;
     private final double longTermMean;
     private final double meanReversionSpeed;

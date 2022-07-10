@@ -2,7 +2,7 @@ package org.wd.rfq.model;
 
 import org.wd.rfq.simulation.RandomGenerator;
 
-public abstract class StochasticModel implements Model {
+abstract class StochasticModel implements Model {
     protected long currentInternalTimestamp;
     protected double currentPrice;
     protected final RandomGenerator randomGenerator;

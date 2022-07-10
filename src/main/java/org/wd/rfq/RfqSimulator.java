@@ -49,7 +49,7 @@ public class RfqSimulator {
     }
 
     public void run() {
-        DataManager dataManager = DataManager.getInstance();
+        DataManager dataManager = new DataManager();
         BlockingQueue<RfqRequestEvent> eventQueue = new LinkedBlockingDeque<>();
 
         PricingThread swapSpreadThread = new PricingThread(
