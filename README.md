@@ -42,7 +42,7 @@ included which will be executed when running the above command.
 The code expects 3 flags:
 
 ```
-    -c (--config): Mandatory flag followed by the absolute path to a config file (e.g. C:\config\config.json
+    -c (--config): Mandatory flag followed by the absolute path to a config file (e.g. C:\config\config.json)
     -e (--enableConsoleLog): Flag to stream logger results to std out.
     -l (--logPath): Flag to stream results to a log file, followed by absolute file path.
 ```
