@@ -33,8 +33,7 @@ class GbmModel extends StochasticModel {
      * In the case of the Vasicek model our random generator is a standard Brownian Motion, so we must multiply the
      * standard normal by the sqrt of the time-delta.
      */
-    @Override
-    public double evolveRandomGenerator(long timeStamp) {
+    private double evolveRandomGenerator(long timeStamp) {
         double yearFraction = getYearFraction(getTimeDelta(timeStamp));
         return this.randomGenerator.getNextValue()*Math.sqrt(yearFraction);
     }

@@ -1,8 +1,9 @@
 package org.wd.rfq.logic;
 
 public class SpreadCalculator {
-    private final static double MIN_SPREAD_BPS = 1;
-    private final static double MAX_SPREAD_BPS = 10;
+    public final static double MIN_SPREAD_BPS = 1;
+    public final static double MAX_SPREAD_BPS = 10;
+
     private final long maxNotional;
 
     public SpreadCalculator(long maxNotional)  {

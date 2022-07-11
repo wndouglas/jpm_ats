@@ -13,8 +13,6 @@ abstract class StochasticModel implements Model {
         this.currentPrice = initialPrice;
     }
 
-    public abstract double evolveRandomGenerator(long timeStamp);
-
     protected long getTimeDelta(long timeStamp) {
         return timeStamp - this.currentInternalTimestamp;
     }
